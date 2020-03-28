@@ -1,4 +1,4 @@
-# Linear Control Theory Homework 2.
+# Linear Control Theory Homework 3.
 
 Done by Daniil Manakovskiy, Group 2. 
 
