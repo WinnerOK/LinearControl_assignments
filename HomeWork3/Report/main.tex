@@ -83,10 +83,59 @@ $\mu = 13, k = 2$
     Since all poles are negative the dynamics is stable.
 
 \subsection*{Sub-task D}
-In order to implement PD control for the described linear system, we should keep proportional error of the last step, so that we can calculate derivative term as follows:
-\begin{equation*}
-    ERROR_d = \frac{\Delta ERROR_p}{\Delta t}
-\end{equation*}
+    The question is how could we possibly implement a PD controller for system:
+    \begin{equation*}
+        \begin{bmatrix} 
+            \dot x_1 \\ \dot x_2 \end{bmatrix} = 
+        \begin{bmatrix} 
+            10 & 3 \\
+            5 & -5 
+        \end{bmatrix} 
+            \begin{bmatrix}x_1 \\ x_2 \end{bmatrix}
+    \end{equation*}
+    Implementing P controller is straight forward, problems arise with D component.\\
+    For $2^{nd}$ and higher order systems we could calculate derivative error component as 
+    \begin{equation*}
+        current\_derivative = \frac{\Delta ERROR_P}{\Delta t}
+    \end{equation*}
+    Since we have an equation of first order, we will have the following situation:
+    
+    \begin{enumerate}
+        \item Let $\begin{bmatrix}x_1 \\ x_2 \end{bmatrix} = X$ and 
+        $
+        \begin{bmatrix} 
+            10 & 3 \\
+            5 & -5 
+        \end{bmatrix} = A$, thus we will have a system:
+        
+        \begin{equation*}
+            \dot X = AX + Bu \text{ , where } u =K_d (\dot X -\dot  X^*) +K_p (X - X^*) 
+        \end{equation*} 
+    
+        \item Substitution of $u$ will lead to:
+        \begin{equation*}
+            \dot X = AX - B K_d \dot X^* - B K_p X^* + B K_d \dot X + B K_p X
+        \end{equation*}
+        
+        \begin{equation*}
+            (I - B K_d ) \dot X = (A + B K_p) X - B(K_d \dot X^* + K_p X^*)
+        \end{equation*}
+        
+        \item Let denote $ K_d \dot X^* + K_p X^* = C \equiv const$, so
+        \begin{equation*}
+            (I - B K_d ) \dot X = (A + B K_p) X - BC
+        \end{equation*}
+        
+        \item There might also be a case that $\exists B^{-1}$ and $K_d = B^{-1}$, therefore:
+        \begin{equation*}
+            (A + B K_p) X = BC
+        \end{equation*}
+        
+        \begin{equation*}
+            X = (A + B K_p)^+ BC 
+        \end{equation*}
+        As a result, if $X \in col((A + B K_p)^+B)$, we have instantaneous change since we got rid of differentials, which is not physical. Similar should happen in general if we use a derivative of the same order as the equation in the control. So we shouldn't do this.
+    \end{enumerate}
 
 \newpage
 \subsection*{Sub-task E}
