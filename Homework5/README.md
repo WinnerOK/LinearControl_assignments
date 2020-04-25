@@ -1,4 +1,4 @@
-# Linear Control Theory Homework 4.
+# Linear Control Theory Homework 5.
 
 Done by Daniil Manakovskiy, Group 2.
 
@@ -6,7 +6,7 @@ Email: d.manakovskiy@innopolis.university
 
 Variant A.
 
-The report is available [here](Control_Theory_HW4.pdf).
+The report is available [here](Control_Theory_HW5.pdf).
 
 Python source code available [here](.) and at [colab](https://colab.research.google.com/drive/1CODglHm9Exz_ssGy75kq8umAunRYZ1-O).
 
