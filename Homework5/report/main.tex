@@ -309,32 +309,32 @@ rank: 4
 
 \section*{Task G. Add white noise to the dynamics.}
 \label{Q:G}
-    I have tried adding noise to the dynamics, but odeint started throwing convergence errors, so there will be no screens or data - only life lesson: do not include randomness in differential equations solved by odeint. Sadly, I have no time to rewrite code to use custom solver.
+    As you see, previously I have widely used odeint as DE solb a DE solver, but I experienced problems with it, because it uses 'Adams/BDF method with automatic stiffness detection and switching.' according to \href{https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.LSODA.html#scipy-integrate-lsoda}{docs.scipy.org}. I do not why, but it causes odeint to work very slow on noise data and produce some internal errors. After this I decided to switch to Runge-Kutta solver. The code is available under 'Kalman filter' section of the source code. As a result at figure \ref{fig:noise_dynamics} we can see noisy states.
+    
+    \begin{figure}[htb]
+        \centering
+        \includegraphics[width=0.5\linewidth]{images/filter/noisy_dynamics.jpg}
+        \caption{Noisy dynamics.}
+        \label{fig:noise_dynamics}
+    \end{figure}
 
 \section*{Task H. Implement Kalman Filter.}
 \label{Q:H}
-    Theory on Kalman filter is taken from \href{https://en.wikipedia.org/wiki/Kalman_filter}{Wikipedia}. The source code is shown at listing \ref{code:kalman}
+    Theory on Kalman filter is taken from \href{https://en.wikipedia.org/wiki/Kalman_filter}{Wikipedia} and Lab 11. The source code is shown at listing \ref{code:kalman}
     
     \lstinputlisting[language=Python,caption={Kalman Filter implementation.}, label={code:kalman}]{code/kalman.py}
 
 \section*{Task I. Kalman Filter correctness.}
 \label{Q:I}
-    Behaviour of Kalman filter on the given dynamics is shown at figure \ref{fig:output_noise_0005_filtered}. You can notice that noise was down-scaled to $0.005$ in order to represent real one. After some rapid changes predictions stabilize with final precision ~0.05. \nameref{fig:kalman_uncontrolled} is similar to the situation at \nameref{fig:luenberg_uncontrolled}: small observation error tends to infinity when the system is unstable. If to consider all states, prediction error behaves similarly (fig. \ref{fig:kalman_prediction_error}).
+    % Behaviour of Kalman filter on the given dynamics is shown at figure \ref{fig:output_noise_0005_filtered}. You can notice that noise was down-scaled to $0.005$ since at higher magnitude filter resulted in numerical instability. After some rapid changes predictions stabilize with final precision ~0.05. \nameref{fig:kalman_uncontrolled} is similar to the situation at \nameref{fig:luenberg_uncontrolled}: small observation error tends to infinity when the system is unstable. If to consider all states, prediction error behaves similarly (fig. \ref{fig:kalman_prediction_error}).
+    
+    Initially I had an error in the usage of the filter. Having fixed that I understood that now I have another problem: if I pass $u$ to the KF predict function, the output becomes numerically unstable. Although if time\_step is small enough, result becomes much better (see figure \ref{fig:output_noise_0005_filtered}). \nameref{fig:kalman_uncontrolled} is similar to the situation at \nameref{fig:luenberg_uncontrolled}: small observation error tends to infinity when the system is unstable. As well error on stabilized system eventually converges to 0 (fig. \ref{fig:kalman_prediction_error}).
+    
     
     \begin{figure}[htb]
-        \begin{subfigure}{.5\textwidth}
-            \centering
-        \includegraphics[width=1\linewidth]{images/filter/kalman.jpg}
-        \caption{Whole prediction.}
-        \label{fig:output_noise_0005_filtered_whole}
-        \end{subfigure}
-        \begin{subfigure}{.5\textwidth}
-          \centering
-          \includegraphics[width=1\linewidth]{images/filter/kalman_sample.jpg}
-          \caption{Sample from stable part.}
-        \label{fig:output_noise_0005_filtered_sample}
-        \end{subfigure}
-    \caption{Kalman filter's predictions with stabilized input and output noise scaled by 0.005}
+    \centering
+        \includegraphics[width=0.5\linewidth]{images/filter/kalman.jpg}
+    \caption{Kalman filter with 0 input}
     \label{fig:output_noise_0005_filtered}
     \end{figure}
     
