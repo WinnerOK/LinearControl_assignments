@@ -20,10 +20,10 @@ L_pole = pole.gain_matrix.T
 
 
 L = L_lqr  # Change this var to work with calculations of L matrix
-def real(x, t, u):
-  Ax = A.dot(x)
-  Bu = B.dot(u).reshape((4, ))
-  ret = Ax + Bu
+def system (x, t):
+  ret = (A - B.dot(k)).dot(x)
+  if NOISE_DYNAMICS:
+    ret += NOISE_SCALE_DYNAMICS * np.random.randn(*(ret.shape)) 
   
   return ret
 
@@ -59,18 +59,21 @@ x_obs = [np.array([x_0_est, ang_0_est, diff_x_0_est, diff_ang_0_est])]
 
 k = place_poles(A, B, desired_poles).gain_matrix
 
-for i in range(1, len(time)):
-  # This trick was suggested by students of 4th group in order not to
+for real_x in np.array(list(RungeKutta(system, x[0], time))):
+ x.append(real_x)
+  # This trick with odeint was suggested by students of 4th group in order not to
   # implement custom numeric solver but at the same time pass to the observer
   # values from "sensors"
-  local_time = np.linspace(time[i-1], time[i])
-  u = -k.dot(x_obs[-1])
-  # u = np.array([0])  # uncomment to work with uncontrolled system
+  local_time = np.linspace(time[i-1], time[i], num=2)
 
-  x_dot = odeint(real, x[-1], local_time, args=(u, ))
-  x.append(x_dot[-1])
-  
   y = C.dot(x[-1])
+  if NOISE_OUTPUT:
+    y += NOISE_SCALE_OUTPUT * np.random.randn(*(y.shape))
+  
+  sensor_data.append(y)
+  
+  u = -k.dot(x_obs[-1])
+  # u = np.array([0])  # uncomment to work with uncontrolled
   x_obs_dot = odeint(luenberg, x_obs[-1], local_time, args=(u, y))
   x_obs.append(x_obs_dot[-1])
 
