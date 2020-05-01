@@ -64,7 +64,7 @@ for real_x in np.array(list(RungeKutta(system, x[0], time))):
   # This trick with odeint was suggested by students of 4th group in order not to
   # implement custom numeric solver but at the same time pass to the observer
   # values from "sensors"
-  local_time = np.linspace(time[i-1], time[i], num=2)
+  local_time = np.array([time[i-1], time[i]])
 
   y = C.dot(x[-1])
   if NOISE_OUTPUT:
